@@ -16,6 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source code
 COPY . .
 
+# Install Node.js dependencies (ws module for AIS WebSocket proxy)
+RUN npm install --omit=dev
+
 # Create a non-root user for security
 RUN adduser --system --uid 1001 backenduser \
     && chown -R backenduser /app
