@@ -171,7 +171,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v5.0.0
         with:
-          context: ./backend
+          context: .
           platforms: ${{ matrix.platform }}
           push: ${{ github.event_name != 'pull_request' }}
           labels: ${{ steps.meta.outputs.labels }}
