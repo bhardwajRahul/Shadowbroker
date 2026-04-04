@@ -493,7 +493,7 @@ If you just want to run the dashboard without dealing with terminal commands:
 2. Download the latest `.zip` file from the release.
 3. Extract the folder to your computer.
 4. **Windows:** Double-click `start.bat`.
-   **Mac/Linux:** Open terminal, type `chmod +x start.sh`, `dos2unix start.sh`, and run `./start.sh`.
+   **Mac/Linux:** Open terminal, type `chmod +x start.sh` and run `./start.sh`.
 5. It will automatically install everything and launch the dashboard!
 
 Local launcher notes:
@@ -518,15 +518,15 @@ If you want to modify the code or run from source:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/shadowbroker.git
-cd shadowbroker/live-risk-dashboard
+git clone https://github.com/BigBodyCobain/Shadowbroker.git
+cd Shadowbroker
 
 # Backend setup
 cd backend
 python -m venv venv
 venv\Scripts\activate        # Windows
 # source venv/bin/activate   # macOS/Linux
-pip install -r requirements.txt   # includes pystac-client for Sentinel-2
+pip install .   # installs all dependencies from pyproject.toml
 
 # Optional helper scripts (creates venv + installs dev deps)
 # Windows PowerShell
@@ -659,52 +659,51 @@ The platform is optimized for handling massive real-time datasets:
 ## 📁 Project Structure
 
 ```
-live-risk-dashboard/
+Shadowbroker/
 ├── backend/
-│   ├── main.py                     # FastAPI app, middleware, API routes (~4,000 lines)
-│   ├── cctv.db                     # SQLite CCTV camera database (auto-generated)
-│   ├── config/
-│   │   └── news_feeds.json         # User-customizable RSS feed list
+│   ├── main.py                     # FastAPI app, middleware, API routes
+│   ├── pyproject.toml              # Python dependencies
 │   ├── services/
 │   │   ├── data_fetcher.py         # Core scheduler — orchestrates all data sources
 │   │   ├── ais_stream.py           # AIS WebSocket client (25K+ vessels)
-│   │   ├── carrier_tracker.py      # OSINT carrier position estimator (GDELT news scraping)
-│   │   ├── cctv_pipeline.py        # 13-source CCTV camera ingestion pipeline
+│   │   ├── carrier_tracker.py      # OSINT carrier position estimator
+│   │   ├── cctv_pipeline.py        # 14-source CCTV camera ingestion pipeline
+│   │   ├── correlation_engine.py   # Cross-layer intelligence correlation
 │   │   ├── geopolitics.py          # GDELT + Ukraine frontline + air alerts
 │   │   ├── region_dossier.py       # Right-click country/city intelligence
 │   │   ├── radio_intercept.py      # Police scanner feeds + OpenMHZ
-│   │   ├── kiwisdr_fetcher.py      # KiwiSDR receiver scraper
-│   │   ├── sentinel_search.py      # Sentinel-2 STAC imagery search
+│   │   ├── oracle_service.py       # Prediction market oracle resolution
 │   │   ├── shodan_connector.py     # Shodan device search connector
 │   │   ├── sigint_bridge.py        # APRS-IS TCP bridge
-│   │   ├── network_utils.py        # HTTP client with curl fallback
-│   │   ├── api_settings.py         # API key management
-│   │   ├── news_feed_config.py     # RSS feed config manager
+│   │   ├── config.py               # pydantic-settings configuration
 │   │   ├── fetchers/
+│   │   │   ├── _store.py           # Thread-safe in-memory data store
 │   │   │   ├── flights.py          # OpenSky, adsb.lol, GPS jamming, holding patterns
 │   │   │   ├── geo.py              # AIS vessels, carriers, GDELT, fishing activity
 │   │   │   ├── satellites.py       # CelesTrak TLE + SGP4 propagation
 │   │   │   ├── earth_observation.py # Quakes, fires, volcanoes, air quality, weather
 │   │   │   ├── infrastructure.py   # Data centers, power plants, military bases
+│   │   │   ├── prediction_markets.py # Polymarket aggregation
 │   │   │   ├── trains.py           # Amtrak + DigiTraffic European rail
 │   │   │   ├── sigint.py           # SatNOGS, TinyGS, APRS, Meshtastic
-│   │   │   ├── meshtastic_map.py   # Meshtastic MQTT + map node aggregation
-│   │   │   ├── military.py         # Military aircraft classification
+│   │   │   ├── plane_alert.py      # Plane-Alert DB enrichment
 │   │   │   ├── news.py             # RSS intelligence feed aggregation
 │   │   │   ├── financial.py        # Global markets data
 │   │   │   └── ukraine_alerts.py   # Ukraine air raid alerts
 │   │   └── mesh/                   # InfoNet / Wormhole protocol stack
-│   │       ├── mesh_protocol.py    # Core mesh protocol + routing
-│   │       ├── mesh_crypto.py      # Ed25519, X25519, AESGCM primitives
-│   │       ├── mesh_hashchain.py   # Hash chain commitment system (~1,400 lines)
-│   │       ├── mesh_router.py      # Multi-transport router (APRS, Meshtastic, WS)
-│   │       ├── mesh_wormhole_persona.py  # Gate persona identity management
-│   │       ├── mesh_wormhole_dead_drop.py # Dead Drop token-based DM mailbox
-│   │       ├── mesh_wormhole_ratchet.py   # Double-ratchet DM scaffolding
-│   │       ├── mesh_wormhole_gate_keys.py # Gate key management + rotation
-│   │       ├── mesh_wormhole_seal.py      # Message sealing + unsealing
-│   │       ├── mesh_merkle.py      # Merkle tree proofs for data commitment
+│   │       ├── mesh_protocol.py    # Core mesh protocol + payload normalization
+│   │       ├── mesh_crypto.py      # Ed25519, ECDSA, HKDF primitives
+│   │       ├── mesh_hashchain.py   # Append-only hash chain
+│   │       ├── mesh_router.py      # Multi-transport router (APRS, LoRa, Tor, clearnet)
+│   │       ├── mesh_dm_mls.py      # MLS-like DM encryption
+│   │       ├── mesh_gate_mls.py    # MLS-like gate (channel) encryption
+│   │       ├── mesh_rns.py         # Reticulum Network Stack + Dandelion++ routing
 │   │       ├── mesh_reputation.py  # Node reputation scoring
+│   │       ├── mesh_schema.py      # Event payload validation
+│   │       ├── mesh_wormhole_identity.py  # Wormhole identity management
+│   │       ├── mesh_wormhole_dead_drop.py # Dead Drop token-based DM mailbox
+│   │       ├── mesh_wormhole_contacts.py  # Contact exchange
+│   │       ├── mesh_wormhole_seal.py      # Message sealing + unsealing
 │   │       ├── mesh_oracle.py      # Oracle consensus protocol
 │   │       └── mesh_secure_storage.py # Secure credential storage
 │
@@ -712,23 +711,31 @@ live-risk-dashboard/
 │   ├── src/
 │   │   ├── app/
 │   │   │   └── page.tsx            # Main dashboard — state, polling, layout
-│   │   └── components/
-│   │       ├── MaplibreViewer.tsx   # Core map — all GeoJSON layers
-│   │       ├── MeshChat.tsx        # InfoNet / Mesh / Dead Drop chat panel
-│   │       ├── MeshTerminal.tsx    # Draggable CLI terminal
-│   │       ├── NewsFeed.tsx        # SIGINT feed + entity detail panels
-│   │       ├── WorldviewLeftPanel.tsx   # Data layer toggles (35+ layers)
-│   │       ├── WorldviewRightPanel.tsx  # Search + filter sidebar
-│   │       ├── AdvancedFilterModal.tsx  # Airport/country/owner filtering
-│   │       ├── MapLegend.tsx       # Dynamic legend with all icons
-│   │       ├── MarketsPanel.tsx    # Global financial markets ticker
-│   │       ├── RadioInterceptPanel.tsx # Scanner-style radio panel
-│   │       ├── FindLocateBar.tsx   # Search/locate bar
-│   │       ├── ChangelogModal.tsx  # Version changelog popup (auto-shows on upgrade)
-│   │       ├── SettingsPanel.tsx   # API Keys + News Feed + Shodan config
-│   │       ├── ScaleBar.tsx        # Map scale indicator
-│   │       └── ErrorBoundary.tsx   # Crash recovery wrapper
+│   │   ├── components/
+│   │   │   ├── MaplibreViewer.tsx   # Core map — all GeoJSON layers
+│   │   │   ├── InfonetTerminal/    # InfoNet mesh terminal UI
+│   │   │   ├── MeshChat.tsx        # Mesh / Dead Drop chat panel
+│   │   │   ├── MeshTerminal.tsx    # Draggable CLI terminal
+│   │   │   ├── NewsFeed.tsx        # SIGINT feed + entity detail panels
+│   │   │   ├── PredictionsPanel.tsx # Prediction market panel
+│   │   │   ├── ShodanPanel.tsx     # Shodan search panel
+│   │   │   ├── FilterPanel.tsx     # Data filter controls
+│   │   │   ├── WorldviewLeftPanel.tsx   # Data layer toggles (37+ layers)
+│   │   │   ├── WorldviewRightPanel.tsx  # Search + filter sidebar
+│   │   │   ├── RadioInterceptPanel.tsx  # Scanner-style radio panel
+│   │   │   ├── MarketsPanel.tsx    # Global financial markets ticker
+│   │   │   ├── FindLocateBar.tsx   # Search/locate bar
+│   │   │   └── map/               # Map sub-components, layers, icons, styles
+│   │   ├── hooks/                  # useDataPolling, useDataStore, useGateSSE
+│   │   ├── mesh/                   # Frontend mesh/DM/identity client code
+│   │   └── lib/                    # Utilities, desktop bridge, API client
 │   └── package.json
+│
+├── desktop-shell/                  # Tauri (Rust) desktop wrapper
+├── helm/chart/                     # Kubernetes Helm chart
+├── docker-compose.yml              # Main Docker Compose config
+├── start.sh / start.bat            # Local launcher scripts
+└── compose.sh                      # Podman/Docker auto-detect wrapper
 ```
 
 ---
